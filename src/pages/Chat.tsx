@@ -6,14 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Send, Paperclip, Image as ImageIcon, Video as VideoIcon, FileText } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useChat } from "@/hooks/useChat";
 import { useFileUpload } from "@/hooks/useFileUpload";
+import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import MessageBubble from "@/components/chat/MessageBubble";
 import FileUploadProgress from "@/components/chat/FileUploadProgress";
 
 const Chat = () => {
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [message, setMessage] = useState("");
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -24,20 +28,23 @@ const Chat = () => {
   const { messages, loading, sendMessage } = useChat(conversationId);
   const { uploadFile, uploadProgress } = useFileUpload();
 
+  // Redirect to auth if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      toast({
+        title: "Autenticação necessária",
+        description: "Faça login para acessar o chat",
+        variant: "destructive",
+      });
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate, toast]);
+
   // Get current user and create/get conversation
   useEffect(() => {
-    const initChat = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: "Autenticação necessária",
-          description: "Faça login para usar o chat",
-          variant: "destructive",
-        });
-        return;
-      }
+    if (!user) return;
 
+    const initChat = async () => {
       setCurrentUserId(user.id);
 
       // For demo purposes, create or get a conversation
@@ -68,7 +75,7 @@ const Chat = () => {
     };
 
     initChat();
-  }, [toast]);
+  }, [user]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
