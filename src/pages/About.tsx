@@ -1,29 +1,29 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Users, Target, Sparkles, Shield, Globe } from "lucide-react";
+import { Heart, Users, Target, Sparkles, Shield, Globe, Award, TrendingUp } from "lucide-react";
 
 const About = () => {
   const values = [
     {
       icon: Heart,
       title: "Cuidado Integral",
-      description: "Acreditamos no tratamento holístico, considerando corpo, mente e espírito como um todo integrado."
+      description: "Tratamento holístico que considera corpo, mente e espírito como um todo integrado."
     },
     {
       icon: Users,
       title: "Comunidade",
-      description: "Construímos uma rede de apoio onde terapeutas e pacientes se conectam de forma genuína."
+      description: "Uma rede de apoio onde terapeutas e pacientes se conectam de forma genuína."
     },
     {
       icon: Target,
       title: "Excelência",
-      description: "Selecionamos cuidadosamente profissionais qualificados e comprometidos com resultados reais."
+      description: "Profissionais qualificados e comprometidos com resultados reais e mensuráveis."
     },
     {
       icon: Shield,
       title: "Segurança",
-      description: "Garantimos um ambiente seguro, privado e acolhedor para todas as interações."
+      description: "Ambiente seguro, privado e acolhedor para todas as interações."
     },
     {
       icon: Sparkles,
@@ -35,6 +35,13 @@ const About = () => {
       title: "Acessibilidade",
       description: "Democratizamos o acesso a terapias integrativas através da tecnologia."
     }
+  ];
+
+  const stats = [
+    { number: "10k+", label: "Usuários Ativos" },
+    { number: "500+", label: "Terapeutas Certificados" },
+    { number: "98%", label: "Satisfação" },
+    { number: "50k+", label: "Sessões Realizadas" }
   ];
 
   const team = [
@@ -56,66 +63,90 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-background to-muted/20">
       <Navigation />
 
-      <main className="flex-1 pt-24 pb-16">
+      <main className="flex-1">
         {/* Hero Section */}
-        <section className="px-4 mb-16">
-          <div className="container mx-auto text-center animate-slide-up">
-            <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">
-              Sobre a{" "}
-              <span className="bg-gradient-to-r from-primary via-harmonize to-accent bg-clip-text text-transparent">
-                HarmoniCare
-              </span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Somos uma plataforma dedicada a conectar pessoas em busca de bem-estar 
-              com terapeutas qualificados em terapias integrativas. Nossa missão é 
-              democratizar o acesso ao cuidado holístico através da tecnologia.
-            </p>
+        <section className="relative px-4 pt-32 pb-20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-harmonize/5 to-accent/5" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.1),transparent_50%)]" />
+          
+          <div className="container mx-auto relative z-10">
+            <div className="max-w-4xl mx-auto text-center animate-fade-in">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-primary">Transformando vidas desde 2020</span>
+              </div>
+              
+              <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 leading-tight">
+                Conectando você ao seu{" "}
+                <span className="bg-gradient-to-r from-primary via-harmonize to-accent bg-clip-text text-transparent">
+                  bem-estar
+                </span>
+              </h1>
+              
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-12">
+                Somos uma plataforma dedicada a democratizar o acesso a terapias integrativas de qualidade, 
+                conectando pessoas em busca de equilíbrio com terapeutas experientes e certificados.
+              </p>
+
+              {/* Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
+                {stats.map((stat, index) => (
+                  <div key={index} className="animate-slide-up" style={{ animationDelay: `${index * 100}ms` }}>
+                    <div className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-primary to-harmonize bg-clip-text text-transparent mb-2">
+                      {stat.number}
+                    </div>
+                    <div className="text-sm text-muted-foreground font-medium">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Mission Section */}
-        <section className="px-4 mb-16 bg-muted/30 py-16">
-          <div className="container mx-auto">
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              <Card className="text-center">
-                <CardContent className="pt-6">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-harmonize flex items-center justify-center mx-auto mb-4">
-                    <Target className="w-8 h-8 text-white" />
+        {/* Mission, Vision, Values */}
+        <section className="px-4 py-20">
+          <div className="container mx-auto max-w-6xl">
+            <div className="grid md:grid-cols-3 gap-8">
+              <Card className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/30">
+                <CardContent className="pt-8 pb-8">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-harmonize flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <Target className="w-7 h-7 text-primary-foreground" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Nossa Missão</h3>
-                  <p className="text-muted-foreground">
-                    Facilitar o acesso a terapias integrativas de qualidade, 
-                    promovendo o equilíbrio e bem-estar de cada indivíduo.
+                  <h3 className="text-2xl font-bold mb-4">Nossa Missão</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Facilitar o acesso a terapias integrativas de qualidade, promovendo o equilíbrio 
+                    e bem-estar de cada indivíduo através da tecnologia.
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="text-center">
-                <CardContent className="pt-6">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-harmonize to-accent flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="w-8 h-8 text-white" />
+              <Card className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-harmonize/30">
+                <CardContent className="pt-8 pb-8">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-harmonize to-accent flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <TrendingUp className="w-7 h-7 text-primary-foreground" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Nossa Visão</h3>
-                  <p className="text-muted-foreground">
-                    Ser referência em saúde integrativa, inspirando uma nova 
-                    geração de cuidado com o ser humano completo.
+                  <h3 className="text-2xl font-bold mb-4">Nossa Visão</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Ser a principal plataforma de referência em terapias integrativas, 
+                    transformando a forma como as pessoas cuidam da sua saúde integral.
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="text-center">
-                <CardContent className="pt-6">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center mx-auto mb-4">
-                    <Heart className="w-8 h-8 text-white" />
+              <Card className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-accent/30">
+                <CardContent className="pt-8 pb-8">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <Award className="w-7 h-7 text-primary-foreground" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Nossos Valores</h3>
-                  <p className="text-muted-foreground">
-                    Cuidado genuíno, respeito, ética, excelência e 
-                    compromisso com a transformação das pessoas.
+                  <h3 className="text-2xl font-bold mb-4">Nossos Valores</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Integridade, excelência, acolhimento e transformação guiam cada decisão 
+                    e interação em nossa plataforma.
                   </p>
                 </CardContent>
               </Card>
@@ -123,67 +154,69 @@ const About = () => {
           </div>
         </section>
 
-        {/* Values Section */}
-        <section className="px-4 mb-16">
-          <div className="container mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
-                O Que Nos Move
+        {/* Values Grid */}
+        <section className="px-4 py-20 bg-gradient-to-br from-muted/30 via-background to-muted/20">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4">
+                O que nos move
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Nossos valores guiam cada decisão e moldam a experiência que oferecemos
+                Nossos princípios fundamentais que norteiam cada ação e decisão
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              {values.map((value, index) => (
-                <Card 
-                  key={index}
-                  className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                >
-                  <CardContent className="pt-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-harmonize/20 flex items-center justify-center flex-shrink-0">
-                        <value.icon className="w-6 h-6 text-primary" />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {values.map((value, index) => {
+                const Icon = value.icon;
+                return (
+                  <Card 
+                    key={index} 
+                    className="group hover:shadow-lg transition-all duration-300 animate-slide-up border-border/50"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <CardContent className="pt-8 pb-6">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/10 to-harmonize/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <Icon className="w-6 h-6 text-primary" />
                       </div>
-                      <div>
-                        <h3 className="font-semibold mb-2">{value.title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {value.description}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      <h3 className="text-xl font-bold mb-3">{value.title}</h3>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        {value.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </section>
 
         {/* Team Section */}
-        <section className="px-4 mb-16 bg-muted/30 py-16">
-          <div className="container mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
-                Nossa Equipe
+        <section className="px-4 py-20">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4">
+                Conheça nosso time
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Profissionais dedicados a transformar o cuidado com a saúde integral
+                Pessoas apaixonadas e dedicadas a transformar o acesso ao bem-estar
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8">
               {team.map((member, index) => (
-                <Card key={index} className="text-center">
-                  <CardContent className="pt-6">
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-harmonize mx-auto mb-4 flex items-center justify-center">
-                      <User className="w-12 h-12 text-white" />
+                <Card 
+                  key={index} 
+                  className="group hover:shadow-xl transition-all duration-300 animate-fade-in"
+                  style={{ animationDelay: `${index * 150}ms` }}
+                >
+                  <CardContent className="pt-8 pb-8 text-center">
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary via-harmonize to-accent mx-auto mb-6 flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <Users className="w-12 h-12 text-primary-foreground" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-1">{member.name}</h3>
-                    <p className="text-sm text-primary font-medium mb-3">
-                      {member.role}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
+                    <h3 className="text-xl font-bold mb-2">{member.name}</h3>
+                    <p className="text-primary font-medium mb-4">{member.role}</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
                       {member.description}
                     </p>
                   </CardContent>
@@ -194,40 +227,36 @@ const About = () => {
         </section>
 
         {/* Story Section */}
-        <section className="px-4 mb-16">
+        <section className="px-4 py-20 bg-gradient-to-br from-primary/5 via-harmonize/5 to-accent/5">
           <div className="container mx-auto max-w-4xl">
-            <Card>
-              <CardContent className="pt-6">
-                <h2 className="text-3xl font-serif font-bold mb-6 text-center">
-                  Nossa História
-                </h2>
-                <div className="space-y-4 text-muted-foreground leading-relaxed">
-                  <p>
-                    A HarmoniCare nasceu de uma visão simples, mas transformadora: 
-                    tornar o acesso a terapias integrativas mais fácil e acessível para todos. 
-                    Em um mundo cada vez mais acelerado, percebemos a necessidade crescente 
-                    de cuidar não apenas do corpo, mas também da mente e do espírito.
-                  </p>
-                  <p>
-                    Fundada em 2024, nossa plataforma conecta pessoas em busca de equilíbrio 
-                    com terapeutas qualificados em diversas modalidades: reiki, acupuntura, 
-                    aromaterapia, meditação e muito mais. Cada profissional é cuidadosamente 
-                    selecionado para garantir qualidade e segurança.
-                  </p>
-                  <p>
-                    Acreditamos que o bem-estar é um direito de todos, e a tecnologia deve 
-                    servir como ponte para facilitar essa jornada. Por isso, criamos uma 
-                    experiência completa: agendamento simples, chat em tempo real, conteúdos 
-                    educativos e uma loja com produtos selecionados para apoiar sua jornada 
-                    de autoconhecimento.
-                  </p>
-                  <p className="font-medium text-foreground">
-                    Junte-se a nós nesta jornada de cuidado, equilíbrio e transformação. 
-                    Estamos aqui para apoiar cada passo do seu caminho rumo ao bem-estar integral.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">
+                Nossa história
+              </h2>
+            </div>
+
+            <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+              <p>
+                A <strong className="text-foreground">HarmoniCare</strong> nasceu da observação de uma necessidade real: 
+                pessoas buscando terapias integrativas enfrentavam dificuldades em encontrar profissionais 
+                qualificados e de confiança.
+              </p>
+              <p>
+                Em 2020, nossa fundadora Ana Carolina, com sua vasta experiência em terapias holísticas, 
+                reuniu uma equipe multidisciplinar para criar uma solução que pudesse conectar terapeutas 
+                qualificados com pessoas em busca de bem-estar de forma simples, segura e acessível.
+              </p>
+              <p>
+                Hoje, somos uma comunidade vibrante de milhares de usuários e centenas de terapeutas 
+                certificados, todos unidos pelo objetivo comum de promover saúde integral e transformação 
+                pessoal. Nossa plataforma vai além de um simples marketplace – somos um ecossistema 
+                completo de bem-estar.
+              </p>
+              <p className="text-foreground font-medium">
+                Acreditamos que o acesso ao cuidado holístico é um direito de todos, e trabalhamos 
+                todos os dias para tornar essa visão uma realidade.
+              </p>
+            </div>
           </div>
         </section>
       </main>
@@ -236,8 +265,5 @@ const About = () => {
     </div>
   );
 };
-
-// Import User icon for team avatars
-import { User } from "lucide-react";
 
 export default About;
