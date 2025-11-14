@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+// *** MUDANÇA 1: Trocamos BrowserRouter por HashRouter no import ***
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Therapists from "./pages/Therapists";
 import Shop from "./pages/Shop";
@@ -16,8 +17,7 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Definimos o caminho base para que o react-router-dom funcione
-// corretamente no ambiente de subdiretório do GitHub Pages.
+// A variável BASE_PATH não é mais usada, mas pode permanecer.
 const BASE_PATH = "/harmoni-care-flow/"; 
 
 const App = () => (
@@ -25,8 +25,8 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      {/* AQUI ESTÁ O AJUSTE FINAL: Adicionamos o basename */}
-      <BrowserRouter basename={BASE_PATH}>
+      {/* *** MUDANÇA 2: Usamos <HashRouter> sem o basename *** */}
+      <HashRouter>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/therapists" element={<Therapists />} />
@@ -40,7 +40,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
