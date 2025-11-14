@@ -5,6 +5,9 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // *** AQUI É ONDE VOCÊ DEVE ADICIONAR A LINHA ***
+  base: '/harmoni-care-flow/', 
+  // **********************************************
   server: {
     host: "::",
     port: 8080,
