@@ -1,10 +1,22 @@
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Heart } from "lucide-react";
+import { Menu, X, Heart, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast.error('Erro ao sair');
+    } else {
+      toast.success('Logout realizado com sucesso!');
+    }
+  };
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -44,12 +56,26 @@ const Navigation = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="outline" size="sm" asChild>
-              <NavLink to="/profile">Perfil</NavLink>
-            </Button>
-            <Button size="sm" className="bg-gradient-to-r from-primary to-harmonize hover:opacity-90">
-              Começar
-            </Button>
+            {user ? (
+              <>
+                <Button variant="outline" size="sm" asChild>
+                  <NavLink to="/profile">Perfil</NavLink>
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  onClick={handleSignOut}
+                  className="gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sair
+                </Button>
+              </>
+            ) : (
+              <Button size="sm" className="bg-gradient-to-r from-primary to-harmonize hover:opacity-90" asChild>
+                <NavLink to="/auth">Entrar</NavLink>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -78,12 +104,26 @@ const Navigation = () => {
                 </NavLink>
               ))}
               <div className="flex flex-col gap-2 px-4 pt-2">
-                <Button variant="outline" size="sm" asChild>
-                  <NavLink to="/profile">Perfil</NavLink>
-                </Button>
-                <Button size="sm" className="bg-gradient-to-r from-primary to-harmonize">
-                  Começar
-                </Button>
+                {user ? (
+                  <>
+                    <Button variant="outline" size="sm" asChild>
+                      <NavLink to="/profile">Perfil</NavLink>
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      onClick={handleSignOut}
+                      className="gap-2 justify-start"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sair
+                    </Button>
+                  </>
+                ) : (
+                  <Button size="sm" className="bg-gradient-to-r from-primary to-harmonize" asChild>
+                    <NavLink to="/auth">Entrar</NavLink>
+                  </Button>
+                )}
               </div>
             </div>
           </div>
