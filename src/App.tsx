@@ -16,12 +16,17 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Definimos o caminho base para que o react-router-dom funcione
+// corretamente no ambiente de subdiretório do GitHub Pages.
+const BASE_PATH = "/harmoni-care-flow/"; 
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      {/* AQUI ESTÁ O AJUSTE FINAL: Adicionamos o basename */}
+      <BrowserRouter basename={BASE_PATH}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/therapists" element={<Therapists />} />
