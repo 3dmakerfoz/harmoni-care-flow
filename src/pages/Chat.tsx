@@ -3,70 +3,107 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Send, Paperclip, Image, Video, FileText } from "lucide-react";
-import { useState } from "react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Send, Paperclip, Image as ImageIcon, Video as VideoIcon, FileText } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { useChat } from "@/hooks/useChat";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import MessageBubble from "@/components/chat/MessageBubble";
+import FileUploadProgress from "@/components/chat/FileUploadProgress";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
-  const conversations = [
-    {
-      id: 1,
-      name: "Ana Silva",
-      lastMessage: "Ótimo! Nos vemos amanhã então",
-      time: "10:30",
-      unread: 2,
-      online: true,
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-    },
-    {
-      id: 2,
-      name: "Carlos Mendes",
-      lastMessage: "Obrigado pelo material enviado",
-      time: "Ontem",
-      unread: 0,
-      online: false,
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-    },
-    {
-      id: 3,
-      name: "Mariana Costa",
-      lastMessage: "Que bom que está se sentindo melhor!",
-      time: "15/11",
-      unread: 0,
-      online: true,
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
-    },
-  ];
+  const { messages, loading, sendMessage } = useChat(conversationId);
+  const { uploadFile, uploadProgress } = useFileUpload();
 
-  const messages = [
-    {
-      id: 1,
-      sender: "therapist",
-      text: "Olá! Como você está se sentindo hoje?",
-      time: "10:15",
-    },
-    {
-      id: 2,
-      sender: "user",
-      text: "Oi! Estou bem melhor depois da última sessão, obrigado por perguntar!",
-      time: "10:18",
-    },
-    {
-      id: 3,
-      sender: "therapist",
-      text: "Que maravilha! Fico muito feliz em saber. Vamos continuar com os exercícios que combinamos?",
-      time: "10:20",
-    },
-    {
-      id: 4,
-      sender: "user",
-      text: "Sim, claro! Tenho praticado diariamente.",
-      time: "10:22",
-    },
-  ];
+  // Get current user and create/get conversation
+  useEffect(() => {
+    const initChat = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Autenticação necessária",
+          description: "Faça login para usar o chat",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setCurrentUserId(user.id);
+
+      // For demo purposes, create or get a conversation
+      const { data: existingConversations } = await supabase
+        .from('conversation_participants')
+        .select('conversation_id')
+        .eq('user_id', user.id)
+        .limit(1);
+
+      if (existingConversations && existingConversations.length > 0) {
+        setConversationId(existingConversations[0].conversation_id);
+      } else {
+        // Create new conversation
+        const { data: newConversation } = await supabase
+          .from('conversations')
+          .insert({})
+          .select()
+          .single();
+
+        if (newConversation) {
+          await supabase.from('conversation_participants').insert({
+            conversation_id: newConversation.id,
+            user_id: user.id,
+          });
+          setConversationId(newConversation.id);
+        }
+      }
+    };
+
+    initChat();
+  }, [toast]);
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleSendMessage = async () => {
+    if (!message.trim()) return;
+
+    await sendMessage(message, 'text');
+    setMessage("");
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    for (const file of Array.from(files)) {
+      const result = await uploadFile(file);
+      if (result) {
+        await sendMessage(null, result.messageType, result.url, file.name, file.size);
+      }
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -84,46 +121,15 @@ const Chat = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-4 h-[600px]">
-            {/* Conversas */}
+            {/* Conversas - Placeholder for future implementation */}
             <Card className="md:col-span-1 overflow-hidden">
               <CardHeader className="border-b">
                 <CardTitle>Conversas</CardTitle>
               </CardHeader>
-              <CardContent className="p-0">
-                <div className="divide-y">
-                  {conversations.map((conv) => (
-                    <div
-                      key={conv.id}
-                      className="p-4 hover:bg-muted/50 cursor-pointer transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <Avatar>
-                            <AvatarImage src={conv.avatar} alt={conv.name} />
-                            <AvatarFallback>{conv.name[0]}</AvatarFallback>
-                          </Avatar>
-                          {conv.online && (
-                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-background"></span>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <h3 className="font-semibold text-sm truncate">{conv.name}</h3>
-                            <span className="text-xs text-muted-foreground">{conv.time}</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <p className="text-sm text-muted-foreground truncate">
-                              {conv.lastMessage}
-                            </p>
-                            {conv.unread > 0 && (
-                              <Badge className="ml-2 bg-accent">{conv.unread}</Badge>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <CardContent className="p-4">
+                <p className="text-sm text-muted-foreground text-center">
+                  Sistema de conversas em desenvolvimento
+                </p>
               </CardContent>
             </Card>
 
@@ -132,54 +138,98 @@ const Chat = () => {
               <CardHeader className="border-b flex-shrink-0">
                 <div className="flex items-center gap-3">
                   <Avatar>
-                    <AvatarImage src={conversations[0].avatar} alt={conversations[0].name} />
-                    <AvatarFallback>{conversations[0].name[0]}</AvatarFallback>
+                    <AvatarFallback>HC</AvatarFallback>
                   </Avatar>
                   <div>
-                    <CardTitle className="text-lg">{conversations[0].name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">Online</p>
+                    <CardTitle className="text-lg">Chat HarmoniCare</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {loading ? 'Carregando...' : 'Online'}
+                    </p>
                   </div>
                 </div>
               </CardHeader>
 
               <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+                {loading && (
+                  <p className="text-center text-muted-foreground">
+                    Carregando mensagens...
+                  </p>
+                )}
+                
+                {!loading && messages.length === 0 && (
+                  <p className="text-center text-muted-foreground">
+                    Nenhuma mensagem ainda. Comece a conversar!
+                  </p>
+                )}
+
                 {messages.map((msg) => (
-                  <div
+                  <MessageBubble
                     key={msg.id}
-                    className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`max-w-[70%] rounded-2xl p-3 ${
-                        msg.sender === "user"
-                          ? "bg-gradient-to-r from-primary to-harmonize text-white"
-                          : "bg-muted"
-                      }`}
-                    >
-                      <p className="text-sm">{msg.text}</p>
-                      <span
-                        className={`text-xs mt-1 block ${
-                          msg.sender === "user" ? "text-white/70" : "text-muted-foreground"
-                        }`}
-                      >
-                        {msg.time}
-                      </span>
-                    </div>
-                  </div>
+                    message={msg}
+                    isCurrentUser={msg.sender_id === currentUserId}
+                  />
                 ))}
+                <div ref={messagesEndRef} />
               </CardContent>
 
               <div className="border-t p-4 flex-shrink-0">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                  accept="image/*,video/*,application/pdf"
+                  multiple
+                />
+                
+                <FileUploadProgress uploads={uploadProgress} />
+                
                 <div className="flex gap-2 mb-2">
-                  <Button variant="ghost" size="icon">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => fileInputRef.current?.click()}
+                    title="Anexar arquivo"
+                  >
                     <Paperclip className="w-5 h-5" />
                   </Button>
-                  <Button variant="ghost" size="icon">
-                    <Image className="w-5 h-5" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (fileInputRef.current) {
+                        fileInputRef.current.accept = 'image/*';
+                        fileInputRef.current.click();
+                      }
+                    }}
+                    title="Enviar imagem"
+                  >
+                    <ImageIcon className="w-5 h-5" />
                   </Button>
-                  <Button variant="ghost" size="icon">
-                    <Video className="w-5 h-5" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (fileInputRef.current) {
+                        fileInputRef.current.accept = 'video/*';
+                        fileInputRef.current.click();
+                      }
+                    }}
+                    title="Enviar vídeo"
+                  >
+                    <VideoIcon className="w-5 h-5" />
                   </Button>
-                  <Button variant="ghost" size="icon">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (fileInputRef.current) {
+                        fileInputRef.current.accept = 'application/pdf';
+                        fileInputRef.current.click();
+                      }
+                    }}
+                    title="Enviar PDF"
+                  >
                     <FileText className="w-5 h-5" />
                   </Button>
                 </div>
@@ -188,9 +238,15 @@ const Chat = () => {
                     placeholder="Digite sua mensagem..."
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={handleKeyPress}
                     className="flex-1"
+                    disabled={!conversationId}
                   />
-                  <Button className="bg-gradient-to-r from-primary to-harmonize hover:opacity-90">
+                  <Button
+                    onClick={handleSendMessage}
+                    disabled={!message.trim() || !conversationId}
+                    className="bg-gradient-to-r from-primary to-harmonize hover:opacity-90"
+                  >
                     <Send className="w-4 h-4" />
                   </Button>
                 </div>
