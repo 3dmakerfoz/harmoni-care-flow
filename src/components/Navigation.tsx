@@ -23,7 +23,8 @@ const Navigation = () => {
     { name: "Terapeutas", path: "/therapists" },
     { name: "Loja", path: "/shop" },
     { name: "Chat", path: "/chat" },
-    { name: "Meus Conteúdos", path: "/content" },
+    { name: "Conteúdos", path: "/content" },
+    { name: "Sobre", path: "/about" },
   ];
 
   return (
